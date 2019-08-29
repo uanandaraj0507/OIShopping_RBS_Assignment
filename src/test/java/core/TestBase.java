@@ -1,13 +1,19 @@
 package core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -23,16 +29,21 @@ import stepDefinitions.ShoppingListStepDef;
 public class TestBase extends ObjectLocator {
 	AndroidDriver<WebElement> driver;
 	DesiredCapabilities cap = new DesiredCapabilities();
-
-	public void launchApp() throws MalformedURLException {
+	public Properties prop=new Properties();
+	
+	public void launchApp() throws IOException {
+		String filePath = System.getProperty("user.dir");
+		String configPropertyPath = (filePath + "/src/test/configs/config.properties").replace("/", File.separator);
+		InputStream input = new FileInputStream(configPropertyPath);
+		prop.load(input);
 		// driver.resetApp();
-		cap.setCapability("platformName", "ANDROID");
-		cap.setCapability("platformVersion", "9");
-		cap.setCapability("deviceName", "52004803eed56503");
-		cap.setCapability("appPackage", "org.openintents.shopping");
-		cap.setCapability("appActivity", "org.openintents.shopping.ShoppingActivity");
+		cap.setCapability("platformName", prop.getProperty("platformName"));
+		cap.setCapability("platformVersion", prop.getProperty("platformVersion"));
+		cap.setCapability("deviceName",prop.getProperty("deviceName"));
+		cap.setCapability("appPackage", prop.getProperty("appPackage"));
+		cap.setCapability("appActivity",prop.getProperty("appActivity"));
 		cap.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 5000);
-		driver = new AndroidDriver<WebElement>(new URL("http://0.0.0.0:4723/wd/hub"), cap);
+		driver = new AndroidDriver<WebElement>(new URL(prop.getProperty("URL")), cap);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 	}
 
