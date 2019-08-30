@@ -1,19 +1,13 @@
 package core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -29,21 +23,16 @@ import stepDefinitions.ShoppingListStepDef;
 public class TestBase extends ObjectLocator {
 	AndroidDriver<WebElement> driver;
 	DesiredCapabilities cap = new DesiredCapabilities();
-	public Properties prop=new Properties();
-	
-	public void launchApp() throws IOException {
-		String filePath = System.getProperty("user.dir");
-		String configPropertyPath = (filePath + "/src/test/configs/config.properties").replace("/", File.separator);
-		InputStream input = new FileInputStream(configPropertyPath);
-		prop.load(input);
+
+	public void launchApp() throws MalformedURLException {
 		// driver.resetApp();
-		cap.setCapability("platformName", prop.getProperty("platformName"));
-		cap.setCapability("platformVersion", prop.getProperty("platformVersion"));
-		cap.setCapability("deviceName",prop.getProperty("deviceName"));
-		cap.setCapability("appPackage", prop.getProperty("appPackage"));
-		cap.setCapability("appActivity",prop.getProperty("appActivity"));
+		cap.setCapability("platformName", "ANDROID");
+		cap.setCapability("platformVersion", "9");
+		cap.setCapability("deviceName", "52004803eed56503");
+		cap.setCapability("appPackage", "org.openintents.shopping");
+		cap.setCapability("appActivity", "org.openintents.shopping.ShoppingActivity");
 		cap.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 5000);
-		driver = new AndroidDriver<WebElement>(new URL(prop.getProperty("URL")), cap);
+		driver = new AndroidDriver<WebElement>(new URL("http://0.0.0.0:4723/wd/hub"), cap);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 	}
 
@@ -84,10 +73,10 @@ public class TestBase extends ObjectLocator {
 	}
 
 	public void deleteItems() {
-		String checkboxValue=driver.findElement(By.xpath(checkbox_1)).getText();
+		String checkboxValue = driver.findElement(By.xpath(checkbox_1)).getText();
 		driver.findElement(By.xpath(checkbox_1)).click();
-		driver.findElement(By.xpath(cleanup_button)).click(); 
-		System.out.println("Deleted the Iteam succesfully"+checkboxValue);
+		driver.findElement(By.xpath(cleanup_button)).click();
+		System.out.println("Deleted the Iteam succesfully" + checkboxValue);
 	}
 
 	public void sortItems(String listname) {
@@ -106,18 +95,16 @@ public class TestBase extends ObjectLocator {
 		selectList(listName);
 		List<String> actualList = new ArrayList<String>();
 		List<WebElement> SortedItems = driver.findElements(By.xpath(list_value));
-
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		for (int i = 0; i < SortedItems.size(); i++) {
-			driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
 			actualList.add(SortedItems.get(i).getText());
 
 		}
 		System.out.println("Actual List:" + actualList);
-		
-		//Stores the value passed in list
-		List<List<String>> expectedList = ShoppingListStepDef.list; 
-		// Tree set is used to maintain the Order
-		TreeSet<String> ExpectedsortList = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);														
+
+		List<List<String>> expectedList = ShoppingListStepDef.list;
+		TreeSet<String> ExpectedsortList = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
 		for (int i = 1; i < expectedList.size(); i++) {
 
@@ -132,8 +119,6 @@ public class TestBase extends ObjectLocator {
 		int i = 0;
 		for (String expectedItems : ExpectedsortList) {
 			org.junit.Assert.assertEquals(expectedItems, actualList.get(i));
-			// Assertion is done to compare both the list to validate sorting
-			// functionality
 
 			i++;
 		}
