@@ -29,6 +29,13 @@ public class ShoppingListStepDef implements En {
 			
 
 		});
+		
+		When("User select New list and Create a new lists", (DataTable listname) -> {
+			List<List<String>> list=listname.asLists();
+			Page.addingList(list.get(0).get(0));
+			
+
+		});
 
 		And("Select a list and Add new list items", (DataTable itemsname) -> {
 
@@ -48,7 +55,7 @@ public class ShoppingListStepDef implements En {
 
 		Then("Delete an item from the list", (DataTable listname) -> {
 			List<List<String>> list=listname.asLists();
-			Page.selectList(list.get(0).get(1));
+			Page.selectList(list.get(0).get(0));
 			Page.deleteItems();
 		});
 
@@ -56,14 +63,14 @@ public class ShoppingListStepDef implements En {
 
 		And("Select the list and Sort the list", (DataTable listname) -> {
 			List<List<String>> list=listname.asLists();
-			Page.sortItems(list.get(0).get(1));
+			Page.sortItems(list.get(0).get(0));
 		
 		});
 
 		Then("Validate the sorted list", (DataTable listname) -> {
 			List<List<String>> list=listname.asLists();
-			Page.selectList(list.get(0).get(1));
-			Page.validateList(list.get(0).get(1));
+			Page.selectList(list.get(0).get(0));
+			Page.validateList(list.get(0).get(0));
 			
 		});
 
